@@ -1,0 +1,8 @@
+# Runtime dependencies (the same as pyproject.toml). For development: pip install -e ".[dev]"
+fastapi>=0.115
+starlette>=0.39
+uvicorn[standard]>=0.30
+httpx>=0.27
+pydantic>=2.7
+pydantic-settings>=2.3
+beautifulsoup4>=4.12
