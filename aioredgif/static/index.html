@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>aioredgif: lock in, load up</title>
+<meta name="description" content="Pull, keep, browse and play RedGIFs creators, niches and tags. Adults only.">
+<meta name="theme-color" content="#030205">
+<meta name="rating" content="adult">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preload" href="/fonts/archivo-latin-wdth-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/aioredgif.css">
+
+</head>
+<body>
+<div id="backdrop" aria-hidden="true"></div>
+<main>
+  <div class="top">
+    <a class="brandmark" href="/" aria-label="aioredgif home"><img src="/img/logo.png" alt="" width="120" height="50"><span class="wordmark">aioredgif</span></a>
+    <span class="topnav">
+      <button class="rank" id="rankBtn" type="button" title="Your rank and badges"><b id="rankTitle">Lurker</b><i><span id="rankBar"></span></i></button>
+      <button class="btn ghost small" id="libBtn" type="button">Library <b id="libN">0</b></button>
+      <button class="btn ghost small" id="histBtn" type="button">History</button>
+      <button class="btn ghost small" id="favesBtn" type="button">♥ Faves <b id="favesN">0</b></button>
+      <button class="btn hot small" id="caveBtn" type="button">Goon cave</button>
+      <span class="age" title="Adult content">18+</span>
+    </span>
+  </div>
+
+  <section class="hero">
+    <div>
+      <h1>
+        <span class="chrome glitch" id="h1a" data-text="Lock in.">Lock in.</span>
+        <span class="chrome glitch" id="h1b" data-text="Load up.">Load up.</span>
+      </h1>
+      <p class="lede">Drop a <b>creator</b>, <b>niche</b> or <b>tag</b> link and the whole page gets pulled into your stash. Play it right here, loop it, run it across the <b>goon cave</b> wall with the <b>edge timer</b> calling holds, heart the ones that hit. Or take the haul as one .zip with every tag logged.</p>
+
+      <form id="f" novalidate>
+        <div class="row">
+          <input id="url" type="url" required autocomplete="off" spellcheck="false"
+                 placeholder="redgifs.com/users/… or /niches/…" aria-label="Creator, niche or tag link">
+          <button class="hot" id="go" type="submit">Load it all</button>
+          <button class="btn ghost zipbtn" id="goZip" type="button" title="Pull everything, then download it as one .zip">Download .zip</button>
+        </div>
+        <div class="opts">
+          <span class="seg" role="radiogroup" aria-label="Quality">
+            <label><input type="radio" name="q" value="hd" checked><span>HD</span></label>
+            <label><input type="radio" name="q" value="sd"><span>SD</span></label>
+          </span>
+          <label>Up to
+            <select id="limit" aria-label="How many videos">
+              <option>25</option><option selected>100</option><option>250</option><option value="1000">Everything (1000 max)</option>
+            </select>
+            clips
+          </label>
+          <label title="Blurs every preview until you hover or play"><input type="checkbox" id="blurp"> Discreet mode</label>
+        </div>
+        <details class="filters" id="pullFilters">
+          <summary>Tag filter <span id="pullFilterSummary"></span></summary>
+          <div class="filter-grid">
+            <label>Only keep posts tagged
+              <input id="incTags" type="text" autocomplete="off" placeholder="e.g. blonde, solo" aria-describedby="filterHelp">
+            </label>
+            <label>Skip posts tagged
+              <input id="excTags" type="text" autocomplete="off" placeholder="e.g. pov, captions" aria-describedby="filterHelp">
+            </label>
+            <label>Keep a post if it has
+              <select id="tagMatch"><option value="any">any of those tags</option><option value="all">all of those tags</option></select>
+            </label>
+          </div>
+          <p class="filter-help" id="filterHelp">Comma separated. Skipped posts are never downloaded. Skip always wins over keep.</p>
+        </details>
+        <p class="error" id="err" role="alert"></p>
+      </form>
+    </div>
+
+    <div class="art" id="art" aria-hidden="true">
+      <img class="rg-art" src="/img/rg-artwork.jpg" alt="" width="1200" height="697">
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <section id="libraryView" class="view" hidden>
+    <div class="status">
+      <div>
+        <h2>The library</h2>
+        <p id="libSub">Everything you’ve ever pulled, from every session.</p>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="libRescan" type="button" title="Look for files you copied into the downloads folder">Rescan folder</button>
+        <a class="btn ghost" id="libZip" download>Download .zip</a>
+        <button class="btn ghost" id="libCave" type="button">Cave with these</button>
+        <button class="btn hot" id="libPlay" type="button">Play these</button>
+      </div>
+    </div>
+    <div class="libbar">
+      <input id="libQ" type="search" placeholder="Search creators, tags, niches…" aria-label="Search the library" autocomplete="off">
+      <select id="libCreator" aria-label="Creator"><option value="">All creators</option></select>
+      <select id="libKind" aria-label="Type"><option value="all">Clips and images</option><option value="video">Clips only</option><option value="image">Images only</option></select>
+      <select id="libSort" aria-label="Sort">
+        <option value="stashed">Newest stashed</option><option value="random">Random</option><option value="longest">Longest</option>
+        <option value="shortest">Shortest</option><option value="views">Most viewed</option><option value="creator">By creator</option>
+      </select>
+    </div>
+    <div class="tag-ctl" id="libTagCtl"></div>
+    <div class="chips" id="libTags"></div>
+    <div class="sheet" id="libSheet"></div>
+    <p class="more-row"><button class="btn ghost" id="libMore" type="button" hidden>Show more</button></p>
+  </section>
+
+  <section id="historyView" class="view" hidden>
+    <div class="status">
+      <div>
+        <h2>History</h2>
+        <p id="histSub">Every pull you’ve made. Paste the same link again and only new clips get downloaded.</p>
+      </div>
+    </div>
+    <div class="hist" id="histList"></div>
+  </section>
+
+  <section id="rewardsView" class="view" hidden>
+    <div class="status">
+      <div>
+        <h2 id="rwTitle">Lurker</h2>
+        <p id="rwSub"></p>
+      </div>
+    </div>
+    <div class="ladder" id="rwLadder"></div>
+    <h3 class="sub-h">Badges</h3>
+    <div class="badges" id="rwBadges"></div>
+  </section>
+
+  <section id="favesView" class="view" hidden>
+    <div class="status">
+      <div>
+        <h2>Your faves</h2>
+        <p id="favesSub">Heart a clip in the stash or the player and it lands here, even after a restart.</p>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="favesCave" type="button">Cave with faves</button>
+        <button class="btn hot" id="favesPlay" type="button">Play faves</button>
+      </div>
+    </div>
+    <div class="sheet" id="favesSheet"></div>
+  </section>
+
+  <section id="run" hidden aria-live="polite">
+    <div class="status">
+      <div>
+        <h2 id="title">Looking up</h2>
+        <p id="sub">Fetching the post list.</p>
+      </div>
+      <div class="actions">
+        <a class="btn ghost" id="meta" hidden download>Metadata .json</a>
+        <a class="btn ghost" id="tagsjson" hidden download>Tags .json</a>
+        <button class="btn ghost" id="pauseBtn" type="button" hidden>Pause</button>
+        <button class="btn hot" id="retry" type="button" hidden>Try again</button>
+        <button class="btn hot" id="startS" type="button" hidden>Start session</button>
+        <a class="btn ghost" id="zip" hidden>Download .zip</a>
+      </div>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="tags" id="tags" hidden>
+      <div class="tags-head">
+        <h3>What’s in the stash</h3>
+        <p id="tagsub"></p>
+      </div>
+      <div class="tag-ctl" id="tagCtl"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+
+  <div class="player" id="player" hidden role="dialog" aria-modal="true" aria-label="Session player">
+    <div class="pl-stage" id="stage">
+      <div class="pl-top">
+        <div class="pl-who"><b id="plWho"></b><span id="plIdx"></span></div>
+        <div class="pl-session">Session <b id="plTimer">00:00</b></div>
+        <button class="ib heart" id="plFav" type="button" aria-pressed="false" aria-label="Fave this clip (H)" title="Fave (H)">♥</button>
+        <a class="btn ib" id="plDl" download aria-label="Save this clip" title="Save this clip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></a>
+        <button class="ib" id="plClose" type="button" aria-label="Close player (Esc)" title="Close (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="pl-media" id="plMedia">
+        <video id="vid" playsinline preload="auto"></video>
+        <img id="still" alt="" hidden>
+        <div class="pl-flash" id="plFlash"><span id="plFlashIcon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span></div>
+        <div class="pl-tags" id="plTags"></div>
+      </div>
+      <div class="pl-bar">
+        <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="Seek">
+        <div class="pl-row">
+          <button class="ib" id="plPrev" type="button" aria-label="Previous clip (P)" title="Previous (P)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2.5v14H6zM20 5v14L9.5 12z"/></svg></button>
+          <button class="ib main" id="plPlay" type="button" aria-label="Play or pause (Space)" title="Play / pause (Space)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></button>
+          <button class="ib" id="plNext" type="button" aria-label="Next clip (N)" title="Next (N)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 5H18v14h-2.5zM4 5v14l10.5-7z"/></svg></button>
+          <span class="pl-time" id="plTime">0:00 / 0:00</span>
+          <span class="grow"></span>
+          <button class="pill" id="plLoop" type="button" aria-pressed="true" title="Repeat this clip (L)">Edge loop</button>
+          <button class="pill" id="plAuto" type="button" aria-pressed="false" title="Roll into the next clip when this one ends (K)">Keep going</button>
+          <button class="pill" id="plShuf" type="button" aria-pressed="false" title="Shuffle (S)">Shuffle</button>
+          <select class="speed edgeSel" aria-label="Edge timer" title="Edge timer (E cycles)"><option value="off">Off</option><option value="30/10">30s on, 10s hold</option><option value="60/15">60s on, 15s hold</option><option value="90/20">90s on, 20s hold</option><option value="rand">Random</option></select>
+          <select class="speed" id="plSpeed" aria-label="Speed">
+            <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
+          </select>
+          <span class="vol">
+            <button class="ib" id="plMute" type="button" aria-label="Mute (M)" title="Mute (M)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+            <input type="range" id="volr" min="0" max="100" value="80" aria-label="Volume">
+          </span>
+          <button class="ib" id="plFs" type="button" aria-label="Fullscreen (F)" title="Fullscreen (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cave" id="cave" hidden role="dialog" aria-modal="true" aria-label="Goon cave">
+    <div class="cave-bar">
+      <span class="cave-title">Goon cave</span>
+      <button class="btn ghost small cave-more" id="cvMore" type="button" aria-expanded="false" aria-controls="cvOpts">Settings</button>
+      <div class="cave-opts" id="cvOpts">
+        <label>Screens <select id="cvN"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></label>
+        <label>Layout <select id="cvLayout"><option value="fit">Fit to clips</option><option value="grid">Equal grid</option></select></label>
+        <label>Clips <select id="cvFrame" title="Whole: every pixel of each clip is visible. Fill: clips may lose a little at the edges to fill their screen."><option value="whole">Show whole</option><option value="fill">Fill screen</option></select></label>
+        <label>Rotate <select id="cvRot"><option value="0">Never</option><option value="10">10s</option><option value="20" selected>20s</option><option value="30">30s</option><option value="60">60s</option></select></label>
+        <label>Show <select id="cvKind"><option value="video">Clips</option><option value="image">Images</option><option value="all">Both</option></select></label>
+        <label>Source <select id="cvSrc"><option value="stash">This pull</option><option value="library">Library</option><option value="faves">Faves</option></select></label>
+        <label>Edge timer <select class="edgeSel"><option value="off">Off</option><option value="30/10">30s on, 10s hold</option><option value="60/15">60s on, 15s hold</option><option value="90/20">90s on, 20s hold</option><option value="rand">Random</option></select></label>
+      </div>
+      <span class="grow"></span>
+      <span class="pl-session">Session <b id="cvTimer">0:00</b></span>
+      <button class="btn hot small" id="cvExit" type="button">Exit</button>
+    </div>
+    <div class="wall" id="wall"></div>
+    <p class="cave-hint">Tap a screen to hear it. Double-tap to open it full size. Keys: 1 to 9 pick a screen, R swaps it, H faves it, L re-fits the wall, Esc leaves.</p>
+  </div>
+
+  <div class="edge-hud" id="edgeHud" hidden aria-live="assertive">
+    <div class="edge-word" id="edgeWord">Hold</div>
+    <div class="edge-count" id="edgeCount">10</div>
+    <div class="edge-sub" id="edgeSub">Hands off. Back in when it hits zero.</div>
+  </div>
+  <div class="edge-chip" id="edgeChip" hidden></div>
+  <div class="toast" id="toast" hidden role="status"></div>
+
+  <p class="note">Clips come through your own server at the pace RedGIFs allows, so a big stash takes a few minutes to fill. Tap any stashed clip to start a session. Pause a pull any time and start another; nothing gets downloaded twice. In the player: Space plays, arrows seek and set volume, L edge loop, K keep going, S shuffle, H fave, E edge timer, N and P skip, M mute, F fullscreen. In the cave: tap a screen for its sound, 1 to 9 picks a screen, R rotates it, H faves it.</p>
+</main>
+
+<script src="/js/layout.js"></script>
+<script src="/js/aioredgif.js"></script>
+</body>
+</html>
