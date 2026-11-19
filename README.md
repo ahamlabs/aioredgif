@@ -37,23 +37,22 @@ browser, run it across a multi-screen goon cave, or take it away as a .zip with 
 
 ## Install
 
-aioredgif installs straight from GitHub; it is not on PyPI. Replace `OWNER` with the account or
-organisation that hosts the repository.
+aioredgif installs straight from GitHub; it is not on PyPI.
 
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install "aioredgif @ git+https://github.com/OWNER/aioredgif.git"
+pip install "aioredgif @ git+https://github.com/ahamlabs/aioredgif.git"
 ```
 
 | To | Use |
 |---|---|
-| Pin a release | `pip install "aioredgif @ git+https://github.com/OWNER/aioredgif.git@v1.0.0"` |
-| Add the Playwright fallback | `pip install "aioredgif[browser] @ git+https://github.com/OWNER/aioredgif.git"` |
-| Depend on it from another project | `aioredgif @ git+https://github.com/OWNER/aioredgif.git@v1.0.0` in `requirements.txt` or `pyproject.toml` |
-| Upgrade | `pip install --upgrade --force-reinstall "aioredgif @ git+https://github.com/OWNER/aioredgif.git"` |
-| Work on the code | `git clone https://github.com/OWNER/aioredgif.git && cd aioredgif && pip install -e ".[dev]"` |
+| Pin a release | `pip install "aioredgif @ git+https://github.com/ahamlabs/aioredgif.git@v1.0.0"` |
+| Add the Playwright fallback | `pip install "aioredgif[browser] @ git+https://github.com/ahamlabs/aioredgif.git"` |
+| Depend on it from another project | `aioredgif @ git+https://github.com/ahamlabs/aioredgif.git@v1.0.0` in `requirements.txt` or `pyproject.toml` |
+| Upgrade | `pip install --upgrade --force-reinstall "aioredgif @ git+https://github.com/ahamlabs/aioredgif.git"` |
+| Work on the code | `git clone https://github.com/ahamlabs/aioredgif.git && cd aioredgif && pip install -e ".[dev]"` |
 
-A private repository works the same way with SSH: `git+ssh://git@github.com/OWNER/aioredgif.git`.
+A private repository works the same way with SSH: `git+ssh://git@github.com/ahamlabs/aioredgif.git`.
 
 ## Quick start
 
@@ -77,7 +76,7 @@ aioredgif history                          # every pull; "aioredgif resume <id>"
 Optional browser fallback (used only when the API route fails):
 
 ```bash
-pip install "aioredgif[browser] @ git+https://github.com/OWNER/aioredgif.git" && playwright install chromium
+pip install "aioredgif[browser] @ git+https://github.com/ahamlabs/aioredgif.git" && playwright install chromium
 ```
 
 With Docker:
