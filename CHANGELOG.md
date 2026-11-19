@@ -17,7 +17,7 @@ First release as **aioredgif**.
   `GET /v1/users/{name}/report`, `GET /v1/library/creators`, `aioredgif info`.
 - Library exports as JSON, JSON Lines or CSV (`GET /v1/library/export`, `aioredgif export`).
 - Data guide (`docs/DATA.md`) and command line guide (`docs/CLI.md`).
-- Install from GitHub with pip (`pip install "aioredgif @ git+https://github.com/OWNER/aioredgif.git"`).
+- Install from GitHub with pip (`pip install "aioredgif @ git+https://github.com/ahamlabs/aioredgif.git"`).
 - Goon cave "Fit to clips" layout: screens shaped like their clips, packed to fill the whole wall
   evenly, re-fitted on resize and rotation; clips that would be cropped heavily are shown whole over a
   blurred poster. Any number of screens from 1 to 9; the equal grid stays as an option. Touch
