@@ -124,10 +124,12 @@ from aioredgif.config import Settings
 from aioredgif.creators import creator_report
 from aioredgif.services import open_services
 
+
 async def main():
     async with open_services(Settings(browser_enabled=False)) as services:
         report = await creator_report(services.client, "someone", limit=200, library=services.library)
         print(report["summary"]["tags"][:5])
+
 
 asyncio.run(main())
 ```
